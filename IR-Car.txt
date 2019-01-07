@@ -1,0 +1,90 @@
+#define ir 12
+#define inA1 6
+#define inA2 7
+#define inB1 8
+#define inB2 9
+#include <IRremote.h>
+IRrecv irrecv(ir);
+decode_results results;
+void setup()
+{
+  irrecv.enableIRIn();
+  pinMode(inA1,OUTPUT);
+  pinMode(inA2,OUTPUT);
+  pinMode(inB1,OUTPUT);
+  pinMode(inB2,OUTPUT);
+}
+void translateIR()
+{
+  switch(results.value)
+  {
+    case 0xFF18E7:
+    robotMove(1);
+    break;
+    case 0xFF38C7:
+    robotMove(0);
+    break;
+    case 0xFF4AB5:
+    robotMove(2);
+    break;
+    case 0xFF5AA5:
+    robotMove(3);
+    break;
+    case 0xFF10EF:
+    robotMove(4);
+    break;
+  }
+}
+void robotMove(int chedo)
+{
+  switch(chedo)
+  {
+    case 0: //Dung
+    motorMove(inA1,inA2,0);
+    motorMove(inB1,inB2,0);
+    break;
+    case 1: //Di thang
+    motorMove(inA1,inA2,1);
+    motorMove(inB1,inB2,1);
+    break;
+    case 2: //Lui
+    motorMove(inA1,inA2,2);
+    motorMove(inB1,inB2,2);
+    break;
+    case 3: //Xoay phai
+    motorMove(inA1,inA2,1);
+    motorMove(inB1,inB2,2);
+    break;
+    case 4: //Xoay trai
+    motorMove(inA1,inA2,2);
+    motorMove(inB1,inB2,1);
+    break;
+  }
+}
+void motorMove(int in1,int in2, byte action)
+{
+  switch(action)
+  {
+    case 0: //Dung
+    digitalWrite(in1,0);
+    digitalWrite(in2,0);
+    break;
+    case 1: //Chieu thu 1
+    digitalWrite(in1,1);
+    digitalWrite(in2,0);
+    break;
+    case 2: //Chieu thu 2
+    digitalWrite(in1,0);
+    digitalWrite(in2,1);
+    break;
+  }
+}
+void loop()
+{
+  if (irrecv.decode(&results))
+ {
+  translateIR();
+  delay(2);
+  irrecv.resume();
+ }
+}
